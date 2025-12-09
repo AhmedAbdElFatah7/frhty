@@ -1,0 +1,755 @@
+{
+	"info": {
+		"_postman_id": "frhty-complete-api",
+		"name": "Frhty - Complete API Collection",
+		"description": "مجموعة كاملة لجميع API endpoints في التطبيق",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.phone) {",
+									"        pm.environment.set(\"phone\", jsonData.data.phone);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"أحمد محمد\",\n    \"phone\": \"0512345678\",\n    \"role\": \"celebrity\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						},
+						"description": "تسجيل مستخدم جديد - يرسل OTP للتحقق"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Registration OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"auth_token\", jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"{{phone}}\",\n    \"otp\": \"1234\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/verify-registration",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"verify-registration"
+							]
+						},
+						"description": "التحقق من OTP بعد التسجيل وتفعيل الحساب"
+					},
+					"response": []
+				},
+				{
+					"name": "Login (Send OTP)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.phone) {",
+									"        pm.environment.set(\"phone\", jsonData.data.phone);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"0512345678\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						},
+						"description": "إرسال OTP لرقم الهاتف لتسجيل الدخول"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP (Login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"auth_token\", jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"{{phone}}\",\n    \"otp\": \"1234\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/verify-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"verify-otp"
+							]
+						},
+						"description": "التحقق من OTP وتسجيل الدخول"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user_name",
+									"value": "ahmed_celebrity",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "male",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/complete-profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"complete-profile"
+							]
+						},
+						"description": "إكمال بيانات البروفايل (اسم المستخدم، الجنس، الصورة)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						},
+						"description": "جلب بيانات المستخدم الحالي"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"logout"
+							]
+						},
+						"description": "تسجيل الخروج وإلغاء التوكن"
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالتسجيل وتسجيل الدخول"
+		},
+		{
+			"name": "2. Celebrities (Public)",
+			"item": [
+				{
+					"name": "Get All Celebrities",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/celebrities",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"celebrities"
+							]
+						},
+						"description": "قائمة جميع المشاهير (عامة - لا تحتاج تسجيل دخول)"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Celebrities",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/celebrities?search=أحمد",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"celebrities"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "أحمد"
+								}
+							]
+						},
+						"description": "البحث عن مشاهير بالاسم"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Celebrity Profile (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/celebrities/{{celebrity_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"celebrities",
+								"{{celebrity_id}}"
+							]
+						},
+						"description": "عرض بروفايل مشهور (بدون تسجيل دخول)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Celebrity Profile (Authenticated)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/celebrities/{{celebrity_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"celebrities",
+								"{{celebrity_id}}"
+							]
+						},
+						"description": "عرض بروفايل مشهور مع حالة المتابعة (مع تسجيل دخول)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Celebrity Followers",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/celebrities/{{celebrity_id}}/followers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"celebrities",
+								"{{celebrity_id}}",
+								"followers"
+							]
+						},
+						"description": "قائمة متابعي المشهور"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Celebrity Following",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/celebrities/{{celebrity_id}}/following",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"celebrities",
+								"{{celebrity_id}}",
+								"following"
+							]
+						},
+						"description": "قائمة من يتابعهم المشهور"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints عامة لعرض المشاهير وبروفايلاتهم"
+		},
+		{
+			"name": "3. Follow System",
+			"item": [
+				{
+					"name": "Follow Celebrity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/celebrities/{{celebrity_id}}/follow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"celebrities",
+								"{{celebrity_id}}",
+								"follow"
+							]
+						},
+						"description": "متابعة مشهور"
+					},
+					"response": []
+				},
+				{
+					"name": "Unfollow Celebrity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/celebrities/{{celebrity_id}}/unfollow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"celebrities",
+								"{{celebrity_id}}",
+								"unfollow"
+							]
+						},
+						"description": "إلغاء متابعة مشهور"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Following List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/my-following",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"my-following"
+							]
+						},
+						"description": "قائمة المشاهير الذين أتابعهم"
+					},
+					"response": []
+				}
+			],
+			"description": "نظام المتابعة - يحتاج تسجيل دخول"
+		},
+		{
+			"name": "4. Social Accounts",
+			"item": [
+				{
+					"name": "Get Available Platforms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/social-accounts/platforms",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"social-accounts",
+								"platforms"
+							]
+						},
+						"description": "قائمة المنصات المتاحة"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All My Social Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/social-accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"social-accounts"
+							]
+						},
+						"description": "جلب جميع حساباتي على المنصات"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Social Account (Full)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"platform\": \"snapchat\",\n    \"account_url\": \"https://snapchat.com/add/username\",\n    \"followers_count\": 50000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/social-accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"social-accounts"
+							]
+						},
+						"description": "إضافة حساب كامل (منصة + رابط + متابعين)"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Social Account (Platform Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"platform\": \"tiktok\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/social-accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"social-accounts"
+							]
+						},
+						"description": "إضافة منصة فقط بدون رابط أو متابعين"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Social Account (With URL Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"platform\": \"instagram\",\n    \"account_url\": \"https://instagram.com/username\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/social-accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"social-accounts"
+							]
+						},
+						"description": "إضافة حساب مع الرابط فقط"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Social Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/social-accounts/{{account_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"social-accounts",
+								"{{account_id}}"
+							]
+						},
+						"description": "عرض حساب محدد"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Social Account",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"platform\": \"snapchat\",\n    \"account_url\": \"https://snapchat.com/add/newusername\",\n    \"followers_count\": 75000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/social-accounts/{{account_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"social-accounts",
+								"{{account_id}}"
+							]
+						},
+						"description": "تحديث حساب موجود"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Social Account",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/social-accounts/{{account_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"social-accounts",
+								"{{account_id}}"
+							]
+						},
+						"description": "حذف حساب"
+					},
+					"response": []
+				}
+			],
+			"description": "إدارة حسابات المنصات الاجتماعية"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "phone",
+			"value": "0512345678",
+			"type": "string"
+		},
+		{
+			"key": "celebrity_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "account_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

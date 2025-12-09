@@ -1,0 +1,601 @@
+{
+	"info": {
+		"_postman_id": "contest-api-collection",
+		"name": "Contest API - Farhty",
+		"description": "مجموعة كاملة لـ API المسابقات",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "contest_id",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Create Contest (Celebrity)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.data && jsonData.data.contest && jsonData.data.contest.id) {",
+							"        pm.environment.set(\"contest_id\", jsonData.data.contest.id);",
+							"    }",
+							"    pm.test(\"Contest created successfully\", function () {",
+							"        pm.expect(jsonData.success).to.eql(true);",
+							"    });",
+							"    pm.test(\"Has questions\", function () {",
+							"        pm.expect(jsonData.data.contest.questions_count).to.be.above(0);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform_id\": 1,\n  \"title\": \"مسابقة TikTok الكبرى\",\n  \"description\": \"اختبر معلوماتك عن السعودية واربح جوائز قيمة\",\n  \"start_date\": \"2025-12-10 00:00:00\",\n  \"end_date\": \"2025-12-20 23:59:59\",\n  \"max_attempts\": 3,\n  \"terms\": [\n    \"يجب أن تكون متابعاً للحساب\",\n    \"العمر 18 سنة فأكثر\",\n    \"يجب المشاركة من داخل السعودية\",\n    \"الفائز واحد فقط\",\n    \"النتيجة النهائية غير قابلة للطعن\"\n  ],\n  \"questions\": [\n    {\n      \"question_text\": \"ما هي عاصمة المملكة العربية السعودية؟\",\n      \"option_1\": \"الرياض\",\n      \"option_2\": \"جدة\",\n      \"option_3\": \"مكة المكرمة\",\n      \"correct_answer\": \"1\"\n    },\n    {\n      \"question_text\": \"كم عدد مناطق المملكة الإدارية؟\",\n      \"option_1\": \"10 مناطق\",\n      \"option_2\": \"13 منطقة\",\n      \"option_3\": \"15 منطقة\",\n      \"correct_answer\": \"2\"\n    },\n    {\n      \"question_text\": \"ما هو تاريخ اليوم الوطني السعودي؟\",\n      \"option_1\": \"23 سبتمبر\",\n      \"option_2\": \"1 يناير\",\n      \"option_3\": \"15 مارس\",\n      \"correct_answer\": \"1\"\n    },\n    {\n      \"question_text\": \"ما هي أكبر مدينة في السعودية من حيث المساحة؟\",\n      \"option_1\": \"الرياض\",\n      \"option_2\": \"جدة\",\n      \"option_3\": \"الدمام\",\n      \"correct_answer\": \"1\"\n    },\n    {\n      \"question_text\": \"في أي عام تأسست المملكة العربية السعودية؟\",\n      \"option_1\": \"1932\",\n      \"option_2\": \"1950\",\n      \"option_3\": \"1920\",\n      \"correct_answer\": \"1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "إنشاء مسابقة جديدة مع الأسئلة والشروط - Celebrity فقط"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create Contest - Minimum (1 Question)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    pm.test(\"Contest created\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.success).to.eql(true);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform_id\": 2,\n  \"title\": \"مسابقة سريعة\",\n  \"description\": \"سؤال واحد فقط\",\n  \"start_date\": \"2025-12-10 00:00:00\",\n  \"end_date\": \"2025-12-15 23:59:59\",\n  \"max_attempts\": 1,\n  \"questions\": [\n    {\n      \"question_text\": \"ما هي عاصمة السعودية؟\",\n      \"option_1\": \"الرياض\",\n      \"option_2\": \"جدة\",\n      \"option_3\": \"مكة\",\n      \"correct_answer\": \"1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "مسابقة بحد أدنى - سؤال واحد بدون شروط"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Create Contest - Without Terms",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform_id\": 3,\n  \"title\": \"مسابقة YouTube\",\n  \"description\": \"مسابقة بدون شروط\",\n  \"start_date\": \"2025-12-10 00:00:00\",\n  \"end_date\": \"2025-12-25 23:59:59\",\n  \"max_attempts\": 5,\n  \"questions\": [\n    {\n      \"question_text\": \"كم عدد مناطق السعودية؟\",\n      \"option_1\": \"10\",\n      \"option_2\": \"13\",\n      \"option_3\": \"15\",\n      \"correct_answer\": \"2\"\n    },\n    {\n      \"question_text\": \"ما هو اليوم الوطني؟\",\n      \"option_1\": \"23 سبتمبر\",\n      \"option_2\": \"1 يناير\",\n      \"option_3\": \"15 مارس\",\n      \"correct_answer\": \"1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "مسابقة بدون شروط - الشروط اختيارية"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Get All Contests (Public)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Has contests array\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.contests).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "عرض جميع المسابقات النشطة - لا يحتاج تسجيل دخول"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Get Contest Details (Public)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Has contest details\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.contest).to.have.property('id');",
+							"    pm.expect(jsonData.data.contest).to.have.property('questions');",
+							"    pm.expect(jsonData.data.contest).to.have.property('terms');",
+							"});",
+							"",
+							"pm.test(\"Questions don't have correct_answer\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var firstQuestion = jsonData.data.contest.questions[0];",
+							"    pm.expect(firstQuestion).to.not.have.property('correct_answer');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/contests/{{contest_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests",
+						"{{contest_id}}"
+					]
+				},
+				"description": "عرض تفاصيل مسابقة محددة - لا يحتاج تسجيل دخول"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Create Contest - Missing Platform (FAIL)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});",
+							"",
+							"pm.test(\"Has validation error\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.errors).to.exist;",
+							"    pm.expect(jsonData.errors.platform_id).to.exist;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"مسابقة بدون منصة\",\n  \"start_date\": \"2025-12-10 00:00:00\",\n  \"end_date\": \"2025-12-20 23:59:59\",\n  \"max_attempts\": 3,\n  \"questions\": [\n    {\n      \"question_text\": \"سؤال؟\",\n      \"option_1\": \"أ\",\n      \"option_2\": \"ب\",\n      \"option_3\": \"ج\",\n      \"correct_answer\": \"1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "محاولة إنشاء مسابقة بدون منصة - يجب أن تفشل"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Create Contest - No Questions (FAIL)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});",
+							"",
+							"pm.test(\"Has validation error for questions\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.errors.questions).to.exist;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform_id\": 1,\n  \"title\": \"مسابقة بدون أسئلة\",\n  \"start_date\": \"2025-12-10 00:00:00\",\n  \"end_date\": \"2025-12-20 23:59:59\",\n  \"max_attempts\": 3,\n  \"questions\": []\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "محاولة إنشاء مسابقة بدون أسئلة - يجب أن تفشل"
+			},
+			"response": []
+		},
+		{
+			"name": "8. Create Contest - Invalid Dates (FAIL)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});",
+							"",
+							"pm.test(\"Has validation error for dates\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.errors).to.exist;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform_id\": 1,\n  \"title\": \"مسابقة بتواريخ خاطئة\",\n  \"start_date\": \"2025-12-20 00:00:00\",\n  \"end_date\": \"2025-12-10 23:59:59\",\n  \"max_attempts\": 3,\n  \"questions\": [\n    {\n      \"question_text\": \"سؤال؟\",\n      \"option_1\": \"أ\",\n      \"option_2\": \"ب\",\n      \"option_3\": \"ج\",\n      \"correct_answer\": \"1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "end_date قبل start_date - يجب أن تفشل"
+			},
+			"response": []
+		},
+		{
+			"name": "9. Create Contest - Invalid Correct Answer (FAIL)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform_id\": 1,\n  \"title\": \"مسابقة بإجابة خاطئة\",\n  \"start_date\": \"2025-12-10 00:00:00\",\n  \"end_date\": \"2025-12-20 23:59:59\",\n  \"max_attempts\": 3,\n  \"questions\": [\n    {\n      \"question_text\": \"سؤال؟\",\n      \"option_1\": \"أ\",\n      \"option_2\": \"ب\",\n      \"option_3\": \"ج\",\n      \"correct_answer\": \"4\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "correct_answer = 4 (يجب أن يكون 1 أو 2 أو 3)"
+			},
+			"response": []
+		},
+		{
+			"name": "10. Create Contest - Unauthorized (FAIL)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform_id\": 1,\n  \"title\": \"مسابقة\",\n  \"start_date\": \"2025-12-10 00:00:00\",\n  \"end_date\": \"2025-12-20 23:59:59\",\n  \"max_attempts\": 3,\n  \"questions\": [\n    {\n      \"question_text\": \"سؤال؟\",\n      \"option_1\": \"أ\",\n      \"option_2\": \"ب\",\n      \"option_3\": \"ج\",\n      \"correct_answer\": \"1\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests"
+					]
+				},
+				"description": "محاولة إنشاء مسابقة بدون token - يجب أن تفشل"
+			},
+			"response": []
+		},
+		{
+			"name": "11. Get Non-Existent Contest (FAIL)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Error message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('غير موجودة');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/contests/99999",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"contests",
+						"99999"
+					]
+				},
+				"description": "محاولة عرض مسابقة غير موجودة"
+			},
+			"response": []
+		}
+	]
+}
