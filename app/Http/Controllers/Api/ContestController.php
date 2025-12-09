@@ -24,7 +24,7 @@ class ContestController extends Controller
             ], 401);
         }
     }
-    
+
     public function platforms(Request $request)
     {
         $user = $request->user();
@@ -56,11 +56,18 @@ class ContestController extends Controller
 
             $user = $request->user();
 
+            // Handle image upload
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('contests', 'public');
+            }
+
             $contest = Contest::create([
                 'user_id' => $user->id,
                 'platform_id' => $request->platform_id,
                 'title' => $request->title,
                 'description' => $request->description,
+                'image' => $imagePath,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'is_active' => true,
@@ -104,6 +111,7 @@ class ContestController extends Controller
                         'id' => $contest->id,
                         'title' => $contest->title,
                         'description' => $contest->description,
+                        'image' => $contest->image ? asset('storage/' . $contest->image) : null,
                         'start_date' => $contest->start_date->format('Y-m-d H:i:s'),
                         'end_date' => $contest->end_date->format('Y-m-d H:i:s'),
                         'max_attempts' => $contest->max_attempts,
@@ -175,6 +183,7 @@ class ContestController extends Controller
                             'id' => $contest->id,
                             'title' => $contest->title,
                             'description' => $contest->description,
+                            'image' => $contest->image ? asset('storage/' . $contest->image) : null,
                             'start_date' => $contest->start_date->format('Y-m-d H:i:s'),
                             'end_date' => $contest->end_date->format('Y-m-d H:i:s'),
                             'max_attempts' => $contest->max_attempts,
@@ -221,6 +230,7 @@ class ContestController extends Controller
                         'id' => $contest->id,
                         'title' => $contest->title,
                         'description' => $contest->description,
+                        'image' => $contest->image ? asset('storage/' . $contest->image) : null,
                         'start_date' => $contest->start_date->format('Y-m-d H:i:s'),
                         'end_date' => $contest->end_date->format('Y-m-d H:i:s'),
                         'max_attempts' => $contest->max_attempts,

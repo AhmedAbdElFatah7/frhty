@@ -16,6 +16,7 @@ class Contest extends Model
         'platform_id',
         'title',
         'description',
+        'image',
         'start_date',
         'end_date',
         'is_active',

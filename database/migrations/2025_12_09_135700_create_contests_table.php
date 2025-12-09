@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('platform_id')->constrained('platforms')->onDelete('cascade'); // Platform this contest is for
             $table->string('title');
             $table->text('description')->nullable();
+            $table->string('image')->nullable();
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->boolean('is_active')->default(true);
