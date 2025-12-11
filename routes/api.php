@@ -6,24 +6,32 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\SocialAccountController;
 use App\Http\Controllers\Api\CelebrityController;
 use App\Http\Controllers\Api\ContestController;
+use App\Http\Controllers\Api\HomeController;
 
-// Public routes
+// Public routes (Authentication only)
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/verify-registration', [AuthController::class, 'verifyRegistrationOtp']); // Verify registration OTP and activate user
-Route::post('/login', [AuthController::class, 'login']); // Send OTP
-Route::post('/verify-otp', [AuthController::class, 'verifyOtp']); // Verify OTP and login
+Route::post('/verify-registration', [AuthController::class, 'verifyRegistrationOtp']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 
-// Public Contest Routes
-Route::get('/contests', [ContestController::class, 'index']); // List all active contests
-Route::get('/contests/{id}', [ContestController::class, 'show']); // View contest details
-
-// Protected routes
+// Protected routes (Mobile App)
 Route::middleware('auth:sanctum')->group(function () {
+
+    // Auth Routes
     Route::post('/complete-profile', [AuthController::class, 'completeProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
-    // Contest Routes (Celebrity only)
-    Route::get('/platforms', [ContestController::class, 'platforms']); // Get all platforms
-    Route::post('/contests', [ContestController::class, 'store']); // Create contest
+    // Home Routes
+    Route::get('/home/platforms', [HomeController::class, 'getPlatforms']);
+    Route::get('/home/latest-contests', [HomeController::class, 'getLatestContestsPerPlatform']);
+    Route::get('/contests-by-platform', [HomeController::class, 'getByPlatform']);
+
+    // Contest Routes (All Users)
+    Route::get('/contests', [ContestController::class, 'index']);
+    Route::get('/contests/{id}', [ContestController::class, 'show']);
+
+    // Celebrity Routes
+    Route::get('/platforms', [ContestController::class, 'platforms']); // Celebrity only
+    Route::post('/contests', [ContestController::class, 'store']); // Celebrity only
 });

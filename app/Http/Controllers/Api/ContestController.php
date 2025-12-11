@@ -14,20 +14,47 @@ use Illuminate\Support\Facades\DB;
 class ContestController extends Controller
 {
 
-    public function __construct(Request $request)
+    /**
+     * Get My Platforms
+     * 
+     * Returns all social media platforms associated with the authenticated celebrity user.
+     * Includes platform details and follower count.
+     * 
+     * @authenticated
+     * 
+     * @response 200 scenario="success" {
+     *   "success": true,
+     *   "message": "تم الحصول على منصاتك بنجاح",
+     *   "data": {
+     *     "platforms": [
+     *       {
+     *         "id": 1,
+     *         "name": "tiktok",
+     *         "display_name": "TikTok",
+     *         "account_url": "https://tiktok.com/@username",
+     *         "followers_count": 50000
+     *       }
+     *     ],
+     *     "total": 3
+     *   }
+     * }
+     * 
+     * @response 401 scenario="unauthorized" {
+     *   "success": false,
+     *   "message": "غير مسموح لك بالدخول لهذه الصفحة"
+     * }
+     */
+    public function platforms(Request $request)
     {
         $user = $request->user();
-        if ($user->role != 'celebrity') {
+
+        if (!$user || $user->role != 'celebrity') {
             return response()->json([
                 'success' => false,
                 'message' => 'غير مسموح لك بالدخول لهذه الصفحة',
             ], 401);
         }
-    }
 
-    public function platforms(Request $request)
-    {
-        $user = $request->user();
 
         $platforms = $user->platforms()->get();
 
@@ -49,12 +76,71 @@ class ContestController extends Controller
         ], 200);
     }
 
+    /**
+     * Create Contest
+     * 
+     * Creates a new contest for a specific platform.
+     * Only celebrities can create contests.
+     * Includes contest details, terms, and questions.
+     * 
+     * @authenticated
+     * 
+     * @bodyParam platform_id integer required The ID of the platform. Example: 1
+     * @bodyParam title string required The contest title. Example: مسابقة TikTok الكبرى
+     * @bodyParam description string optional Contest description. Example: اختبر معلوماتك
+     * @bodyParam image file optional Contest image (max 6MB).
+     * @bodyParam start_date datetime required Contest start date. Example: 2025-12-10 00:00:00
+     * @bodyParam end_date datetime required Contest end date. Example: 2025-12-20 23:59:59
+     * @bodyParam max_attempts integer required Maximum attempts allowed (1-10). Example: 3
+     * @bodyParam terms array optional Array of contest terms.
+     * @bodyParam terms.* string optional Contest term text. Example: يجب أن تكون متابعاً للحساب
+     * @bodyParam questions array required Array of questions (min 1).
+     * @bodyParam questions.*.question_text string required Question text. Example: ما هي عاصمة السعودية؟
+     * @bodyParam questions.*.option_1 string required First option. Example: الرياض
+     * @bodyParam questions.*.option_2 string required Second option. Example: جدة
+     * @bodyParam questions.*.option_3 string required Third option. Example: مكة
+     * @bodyParam questions.*.correct_answer string required Correct answer (1, 2, or 3). Example: 1
+     * 
+     * @response 201 scenario="success" {
+     *   "success": true,
+     *   "message": "تم إنشاء المسابقة بنجاح",
+     *   "data": {
+     *     "contest": {
+     *       "id": 1,
+     *       "title": "مسابقة TikTok الكبرى",
+     *       "platform": {...},
+     *       "celebrity": {...},
+     *       "questions": [...],
+     *       "terms": [...]
+     *     }
+     *   }
+     * }
+     * 
+     * @response 401 scenario="unauthorized" {
+     *   "success": false,
+     *   "message": "غير مسموح لك بالدخول لهذه الصفحة"
+     * }
+     * 
+     * @response 500 scenario="error" {
+     *   "success": false,
+     *   "message": "حدث خطأ أثناء إنشاء المسابقة",
+     *   "error": "Error details"
+     * }
+     */
     public function store(StoreContestRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
 
             $user = $request->user();
+
+            if (!$user || $user->role != 'celebrity') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'غير مسموح لك بالدخول لهذه الصفحة',
+                ], 401);
+            }
+
 
             // Handle image upload
             $imagePath = null;
@@ -164,7 +250,40 @@ class ContestController extends Controller
     }
 
     /**
-     * Get all active contests.
+     * Get All Active Contests
+     * 
+     * Returns a list of all active contests.
+     * Only returns contests where is_active=true and end_date >= now.
+     * Results are ordered by creation date (newest first).
+     * 
+     * @response 200 scenario="success" {
+     *   "success": true,
+     *   "data": {
+     *     "contests": [
+     *       {
+     *         "id": 1,
+     *         "title": "مسابقة TikTok الكبرى",
+     *         "description": "اختبر معلوماتك",
+     *         "image": "http://localhost:8000/storage/contests/image.jpg",
+     *         "start_date": "2025-12-10 00:00:00",
+     *         "end_date": "2025-12-20 23:59:59",
+     *         "max_attempts": 3,
+     *         "platform": {...},
+     *         "celebrity": {...},
+     *         "questions_count": 3,
+     *         "terms_count": 2,
+     *         "is_active": true
+     *       }
+     *     ],
+     *     "total": 5
+     *   }
+     * }
+     * 
+     * @response 500 scenario="error" {
+     *   "success": false,
+     *   "message": "حدث خطأ أثناء جلب المسابقات",
+     *   "error": "Error details"
+     * }
      */
     public function index(): JsonResponse
     {
@@ -215,7 +334,55 @@ class ContestController extends Controller
     }
 
     /**
-     * Get a specific contest with all details.
+     * Get Contest Details
+     * 
+     * Returns detailed information about a specific contest.
+     * Includes platform, celebrity, questions, and terms.
+     * Questions are returned without correct answers for security.
+     * 
+     * @urlParam id integer required The ID of the contest. Example: 1
+     * 
+     * @response 200 scenario="success" {
+     *   "success": true,
+     *   "data": {
+     *     "contest": {
+     *       "id": 1,
+     *       "title": "مسابقة TikTok الكبرى",
+     *       "description": "اختبر معلوماتك",
+     *       "image": "http://localhost:8000/storage/contests/image.jpg",
+     *       "start_date": "2025-12-10 00:00:00",
+     *       "end_date": "2025-12-20 23:59:59",
+     *       "max_attempts": 3,
+     *       "is_active": true,
+     *       "platform": {
+     *         "id": 1,
+     *         "name": "tiktok",
+     *         "display_name": "TikTok"
+     *       },
+     *       "celebrity": {
+     *         "id": 1,
+     *         "name": "أحمد محمد",
+     *         "user_name": "ahmed_celebrity",
+     *         "image": "http://localhost:8000/storage/users/profile.jpg"
+     *       },
+     *       "terms": [...],
+     *       "questions": [...],
+     *       "questions_count": 3,
+     *       "terms_count": 2
+     *     }
+     *   }
+     * }
+     * 
+     * @response 404 scenario="not found" {
+     *   "success": false,
+     *   "message": "المسابقة غير موجودة"
+     * }
+     * 
+     * @response 500 scenario="error" {
+     *   "success": false,
+     *   "message": "حدث خطأ أثناء جلب المسابقة",
+     *   "error": "Error details"
+     * }
      */
     public function show($id): JsonResponse
     {

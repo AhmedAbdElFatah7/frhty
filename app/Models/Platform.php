@@ -40,4 +40,12 @@ class Platform extends Model
             ->withPivot('account_url', 'followers_count')
             ->withTimestamps();
     }
+
+    /**
+     * Get the contests for this platform.
+     */
+    public function contests()
+    {
+        return $this->hasMany(Contest::class);
+    }
 }
