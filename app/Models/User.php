@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'role',
         'image',
+        'cover',
         'gender',
         'verified',
         'completed',
@@ -118,5 +119,21 @@ class User extends Authenticatable
     public function stories()
     {
         return $this->hasMany(Story::class);
+    }
+
+    /**
+     * Get the posts created by this user.
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Get the likes made by this user.
+     */
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('role',['follower','celebrity'])->default('follower');
             $table->string('phone')->unique();
             $table->string('image')->nullable();
+            $table->string('cover')->nullable();
             $table->enum('gender',['male','female','other'])->default('male');
             $table->boolean('verified')->default(false);
             $table->boolean('completed')->default(false);

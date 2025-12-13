@@ -36,6 +36,12 @@ class StoryController extends Controller
 
         $stories = $query->paginate(20);
 
+        // Transform media_path to full URL
+        $stories->getCollection()->transform(function ($story) {
+            $story->media_path = $story->media_path ? asset('storage/' . $story->media_path) : null;
+            return $story;
+        });
+
         return response()->json([
             'success' => true,
             'message' => 'تم جلب الستوريز بنجاح',

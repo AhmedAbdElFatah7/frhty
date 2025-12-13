@@ -3,11 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\SocialAccountController;
 use App\Http\Controllers\Api\CelebrityController;
 use App\Http\Controllers\Api\ContestController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\StoryController;
+use App\Http\Controllers\Api\PostController;
 
 // Public routes (Authentication only)
 Route::post('/register', [AuthController::class, 'register']);
@@ -36,6 +36,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Story Routes (3 endpoints only)
     Route::get('/stories', [StoryController::class, 'index']); // Get all stories
     Route::post('/stories', [StoryController::class, 'store']); // Create story
+
+    // Post Routes
+    Route::get('/posts', [PostController::class, 'index']); // Get all posts
+    Route::post('/posts', [PostController::class, 'store']); // Create post (celebrity only)
+    Route::delete('/posts/{id}', [PostController::class, 'destroy']); // Delete post
+    Route::post('/posts/{id}/toggle-like', [PostController::class, 'toggleLike']); // Like/Unlike post
+
+    // Celebrity Routes (Profile & Follow)
+    Route::get('/celebrities/search', [CelebrityController::class, 'search']); // Search celebrities
+    Route::get('/celebrities/{id}/profile', [CelebrityController::class, 'profile']); // Get celebrity profile
+    Route::post('/celebrities/{id}/toggle-follow', [CelebrityController::class, 'toggleFollow']); // Follow/Unfollow
 
 
     // Celebrity Routes
