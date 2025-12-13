@@ -1,0 +1,465 @@
+{
+	"info": {
+		"_postman_id": "farhty-notifications-collection",
+		"name": "Farhty API - Notifications",
+		"description": "API Collection for Notifications system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "Get All Notifications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications?unread_only=false&limit=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							],
+							"query": [
+								{
+									"key": "unread_only",
+									"value": "false",
+									"description": "true = only unread, false = all notifications"
+								},
+								{
+									"key": "limit",
+									"value": "50",
+									"description": "Number of notifications to return (default: 50)"
+								}
+							]
+						},
+						"description": "Get all notifications for the authenticated user.\n\nQuery Parameters:\n- `unread_only` (boolean): Return only unread notifications\n- `limit` (integer): Number of notifications to return (default: 50)\n\nReturns:\n- List of notifications\n- Unread count\n- Total notifications"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Notifications Only",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications?unread_only=true&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							],
+							"query": [
+								{
+									"key": "unread_only",
+									"value": "true",
+									"description": "Get only unread notifications"
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Limit to 20 notifications"
+								}
+							]
+						},
+						"description": "Get only unread notifications for the authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/unread-count",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"unread-count"
+							]
+						},
+						"description": "Get the count of unread notifications.\n\nUseful for showing a badge on the notifications icon in the app."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/{{notification_id}}/mark-read",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"{{notification_id}}",
+								"mark-read"
+							]
+						},
+						"description": "Mark a specific notification as read.\n\nUsually called when user clicks on a notification."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Notifications as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/mark-all-read",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"mark-all-read"
+							]
+						},
+						"description": "Mark all user's notifications as read.\n\nUseful for \"Mark all as read\" button in the notifications screen.\n\nReturns the number of notifications that were updated."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing notifications"
+		},
+		{
+			"name": "Notification Types Examples",
+			"item": [
+				{
+					"name": "Contest Winner Example",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							]
+						},
+						"description": "Example of Contest Winner Notification:\n\n```json\n{\n  \"id\": 1,\n  \"type\": \"contest_winner\",\n  \"title\": \"🎉 مبروك! لقد فزت في المسابقة\",\n  \"message\": \"تهانينا! لقد أجبت على جميع الأسئلة بشكل صحيح في مسابقة \\\"مسابقة TikTok\\\" وحصلت على 5/5\",\n  \"data\": {\n    \"contest_id\": 1,\n    \"contest_title\": \"مسابقة TikTok\",\n    \"score\": 5,\n    \"total_questions\": 5\n  },\n  \"is_read\": false,\n  \"read_at\": null,\n  \"created_at\": \"2025-12-13 14:30:00\"\n}\n```\n\nThis notification is sent automatically when a user gets all questions correct in a contest."
+					},
+					"response": []
+				},
+				{
+					"name": "New Follower Example",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							]
+						},
+						"description": "Example of New Follower Notification:\n\n```json\n{\n  \"id\": 2,\n  \"type\": \"new_follower\",\n  \"title\": \"متابع جديد\",\n  \"message\": \"أحمد محمد بدأ في متابعتك\",\n  \"data\": {\n    \"follower_id\": 5,\n    \"follower_name\": \"أحمد محمد\",\n    \"follower_user_name\": \"@ahmed\",\n    \"follower_image\": \"http://localhost:8000/storage/users/profile.jpg\"\n  },\n  \"is_read\": false,\n  \"read_at\": null,\n  \"created_at\": \"2025-12-13 13:00:00\"\n}\n```\n\nThis can be sent when someone follows you (not yet implemented in the code, but service method is ready)."
+					},
+					"response": []
+				},
+				{
+					"name": "New Post Example",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							]
+						},
+						"description": "Example of New Post Notification:\n\n```json\n{\n  \"id\": 3,\n  \"type\": \"new_post\",\n  \"title\": \"منشور جديد\",\n  \"message\": \"محمد السعيد نشر منشوراً جديداً\",\n  \"data\": {\n    \"post_id\": 10,\n    \"celebrity_name\": \"محمد السعيد\"\n  },\n  \"is_read\": false,\n  \"read_at\": null,\n  \"created_at\": \"2025-12-13 12:00:00\"\n}\n```\n\nThis can be sent to followers when a celebrity creates a new post (not yet implemented in the code, but service method is ready)."
+					},
+					"response": []
+				},
+				{
+					"name": "New Contest Example",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							]
+						},
+						"description": "Example of New Contest Notification:\n\n```json\n{\n  \"id\": 4,\n  \"type\": \"new_contest\",\n  \"title\": \"مسابقة جديدة\",\n  \"message\": \"محمد السعيد أطلق مسابقة جديدة: مسابقة TikTok الكبرى\",\n  \"data\": {\n    \"contest_id\": 1,\n    \"contest_title\": \"مسابقة TikTok الكبرى\",\n    \"celebrity_name\": \"محمد السعيد\"\n  },\n  \"is_read\": false,\n  \"read_at\": null,\n  \"created_at\": \"2025-12-13 11:00:00\"\n}\n```\n\nThis can be sent to followers when a celebrity creates a new contest (not yet implemented in the code, but service method is ready)."
+					},
+					"response": []
+				}
+			],
+			"description": "Examples of different notification types and their data structure"
+		},
+		{
+			"name": "Authentication (Helper)",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"access_token\", jsonData.data.token);",
+									"        console.log(\"Token saved: \" + jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						},
+						"description": "Login to get OTP"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"access_token\", jsonData.data.token);",
+									"        console.log(\"Token saved: \" + jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01234567890\",\n    \"otp\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/verify-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"verify-otp"
+							]
+						},
+						"description": "Verify OTP and get access token (automatically saves to environment)"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints to get access token"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "notification_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,409 @@
+{
+	"info": {
+		"_postman_id": "farhty-profile-collection",
+		"name": "Farhty API - User Profile",
+		"description": "API Collection for User Profile management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Profile Management",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"profile"
+							]
+						},
+						"description": "Get complete profile information for the authenticated user.\n\nReturns:\n- User details (id, name, user_name, phone, role, gender)\n- Profile image and cover (full URLs)\n- Verification and completion status\n- Followers count\n- Following count\n- Created date"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "أحمد محمد علي",
+									"description": "Full name (optional)",
+									"type": "text"
+								},
+								{
+									"key": "user_name",
+									"value": "ahmed_2025",
+									"description": "Username - unique, alphanumeric + underscore (optional)",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "male",
+									"description": "Gender: male, female, or other (optional)",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"description": "Profile image - max 6MB (optional)",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update"
+							]
+						},
+						"description": "Update user profile information.\n\n**All fields are optional** - only send what you want to update.\n\n**Fields:**\n- `name` (string): Full name\n- `user_name` (string): Username - must be unique, alphanumeric + underscore only\n- `gender` (string): male, female, or other\n- `image` (file): Profile image - max 6MB (jpeg, png, jpg, gif)\n\n**Note:** If uploading a new image, the old image will be automatically deleted."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Name Only",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "أحمد محمد الجديد",
+									"description": "New name",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update"
+							]
+						},
+						"description": "Example: Update only the name field.\n\nAll other fields will remain unchanged."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Username and Gender",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user_name",
+									"value": "new_username_123",
+									"description": "New username",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "male",
+									"description": "Gender",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update"
+							]
+						},
+						"description": "Example: Update username and gender.\n\nYou can update multiple fields at once."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile Image Only",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"description": "New profile image",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update"
+							]
+						},
+						"description": "Example: Update only the profile image.\n\nThe old image will be automatically deleted from storage."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Following List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/profile/following",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"following"
+							]
+						},
+						"description": "Get list of celebrities that the user is following.\n\nFor each celebrity, returns:\n- Basic info (id, name, user_name)\n- Profile image and cover (full URLs)\n- Followers count\n- Date when the user started following them\n\nOrdered by follow date (newest first)."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing user profile"
+		},
+		{
+			"name": "Authentication (Helper)",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"access_token\", jsonData.data.token);",
+									"        console.log(\"Token saved: \" + jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						},
+						"description": "Login to get OTP"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"access_token\", jsonData.data.token);",
+									"        console.log(\"Token saved: \" + jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01234567890\",\n    \"otp\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/verify-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"verify-otp"
+							]
+						},
+						"description": "Verify OTP and get access token (automatically saves to environment)"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints to get access token"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

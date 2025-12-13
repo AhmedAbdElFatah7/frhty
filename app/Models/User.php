@@ -136,4 +136,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Like::class);
     }
+
+    /**
+     * Get the notifications for this user.
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

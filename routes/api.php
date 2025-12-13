@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\ContestController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ProfileController;
 
 // Public routes (Authentication only)
 Route::post('/register', [AuthController::class, 'register']);
@@ -22,6 +24,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/complete-profile', [AuthController::class, 'completeProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+
+    // Profile Routes
+    Route::get('/profile', [ProfileController::class, 'getProfile']); // Get my profile
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile']); // Update profile
+    Route::get('/profile/following', [ProfileController::class, 'getFollowing']); // Get following list
 
     // Home Routes
     Route::get('/home/platforms', [HomeController::class, 'getPlatforms']);
@@ -53,6 +60,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/celebrities/{id}/profile', [CelebrityController::class, 'profile']); // Get celebrity profile
     Route::post('/celebrities/{id}/toggle-follow', [CelebrityController::class, 'toggleFollow']); // Follow/Unfollow
 
+    // Notification Routes
+    Route::get('/notifications', [NotificationController::class, 'index']); // Get notifications
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']); // Get unread count
+    Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead']); // Mark as read
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']); // Mark all as read
 
     // Celebrity Routes
     Route::get('/platforms', [ContestController::class, 'platforms']); // Celebrity only

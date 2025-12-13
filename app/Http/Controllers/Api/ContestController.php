@@ -814,6 +814,18 @@ class ContestController extends Controller
             // Update attempt score
             $attempt->update(['score' => $score]);
 
+            // Send winner notification if user got all answers correct
+            if ($score === $contest->questions->count()) {
+                $notificationService = app(\App\Services\NotificationService::class);
+                $notificationService->sendContestWinnerNotification(
+                    $user,
+                    $contest->title,
+                    $score,
+                    $contest->questions->count(),
+                    $contest->id
+                );
+            }
+
             DB::commit();
 
             return response()->json([
