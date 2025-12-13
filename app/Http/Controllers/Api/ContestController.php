@@ -501,4 +501,354 @@ class ContestController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get Contest for Attempt
+     * 
+     * Returns contest details with user's attempt status.
+     * Checks if user can still attempt the contest.
+     * 
+     * @authenticated
+     * 
+     * @urlParam id integer required The ID of the contest. Example: 1
+     * 
+     * @response 200 scenario="success" {
+     *   "success": true,
+     *   "data": {
+     *     "contest": {
+     *       "id": 1,
+     *       "title": "مسابقة TikTok الكبرى",
+     *       "description": "اختبر معلوماتك",
+     *       "image": "http://localhost:8000/storage/contests/image.jpg",
+     *       "max_attempts": 3,
+     *       "questions_count": 5,
+     *       "platform": {...},
+     *       "celebrity": {...},
+     *       "terms": [...]
+     *     },
+     *     "user_status": {
+     *       "attempts_used": 1,
+     *       "attempts_remaining": 2,
+     *       "can_attempt": true,
+     *       "last_score": 3,
+     *       "last_percentage": 60.00
+     *     }
+     *   }
+     * }
+     */
+    public function getContestForAttempt(Request $request, $id): JsonResponse
+    {
+        try {
+            $contest = Contest::with(['platform', 'user', 'terms'])
+                ->withCount('questions')
+                ->findOrFail($id);
+
+            $user = $request->user();
+
+            // Get user's attempts for this contest
+            $attempts = \App\Models\ContestAttempt::where('contest_id', $id)
+                ->where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $attemptsUsed = $attempts->count();
+            $attemptsRemaining = $contest->max_attempts - $attemptsUsed;
+            $canAttempt = $contest->canUserAttempt($user) && $contest->isActive();
+
+            $lastAttempt = $attempts->first();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'contest' => [
+                        'id' => $contest->id,
+                        'title' => $contest->title,
+                        'description' => $contest->description,
+                        'image' => $contest->image ? asset('storage/' . $contest->image) : null,
+                        'start_date' => $contest->start_date->format('Y-m-d H:i:s'),
+                        'end_date' => $contest->end_date->format('Y-m-d H:i:s'),
+                        'max_attempts' => $contest->max_attempts,
+                        'questions_count' => $contest->questions_count,
+                        'is_active' => $contest->isActive(),
+                        'platform' => [
+                            'id' => $contest->platform->id,
+                            'name' => $contest->platform->name,
+                            'display_name' => $contest->platform->display_name,
+                            'name_ar' => $contest->platform->name_ar,
+                        ],
+                        'celebrity' => [
+                            'id' => $contest->user->id,
+                            'name' => $contest->user->name,
+                            'user_name' => $contest->user->user_name,
+                            'image' => $contest->user->image ? asset('storage/' . $contest->user->image) : null,
+                        ],
+                        'terms' => $contest->terms->map(function ($term) {
+                            return [
+                                'id' => $term->id,
+                                'term' => $term->term,
+                                'order' => $term->order,
+                            ];
+                        }),
+                    ],
+                    'user_status' => [
+                        'attempts_used' => $attemptsUsed,
+                        'attempts_remaining' => $attemptsRemaining,
+                        'can_attempt' => $canAttempt,
+                        'last_score' => $lastAttempt ? $lastAttempt->score : null,
+                        'last_total' => $lastAttempt ? $lastAttempt->total_questions : null,
+                        'last_percentage' => $lastAttempt ? $lastAttempt->percentage : null,
+                    ],
+                ],
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'المسابقة غير موجودة',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء جلب المسابقة',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get Contest Questions
+     * 
+     * Returns all questions for a contest (without correct answers).
+     * User must be able to attempt the contest.
+     * 
+     * @authenticated
+     * 
+     * @urlParam id integer required The ID of the contest. Example: 1
+     * 
+     * @response 200 scenario="success" {
+     *   "success": true,
+     *   "data": {
+     *     "questions": [
+     *       {
+     *         "id": 1,
+     *         "question_text": "ما هي عاصمة السعودية؟",
+     *         "options": {
+     *           "1": "الرياض",
+     *           "2": "جدة",
+     *           "3": "مكة"
+     *         },
+     *         "order": 1
+     *       }
+     *     ],
+     *     "total_questions": 5
+     *   }
+     * }
+     */
+    public function getContestQuestions(Request $request, $id): JsonResponse
+    {
+        try {
+            $contest = Contest::with('questions')->findOrFail($id);
+            $user = $request->user();
+
+            // Check if user can attempt this contest
+            if (!$contest->canUserAttempt($user)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'لقد استنفدت عدد محاولاتك المسموح بها',
+                ], 403);
+            }
+
+            if (!$contest->isActive()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'المسابقة غير نشطة حالياً',
+                ], 403);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'questions' => $contest->questions->map(function ($question) {
+                        return [
+                            'id' => $question->id,
+                            'question_text' => $question->question_text,
+                            'options' => [
+                                '1' => $question->option_1,
+                                '2' => $question->option_2,
+                                '3' => $question->option_3,
+                            ],
+                            'order' => $question->order,
+                        ];
+                    }),
+                    'total_questions' => $contest->questions->count(),
+                ],
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'المسابقة غير موجودة',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء جلب الأسئلة',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Submit Contest Answers
+     * 
+     * Submits user's answers for a contest, evaluates them, and stores the results.
+     * Returns scored results with correct/incorrect answers.
+     * 
+     * @authenticated
+     * 
+     * @urlParam id integer required The ID of the contest. Example: 1
+     * 
+     * @bodyParam answers array required Array of answers. Example: [{"question_id": 1, "selected_answer": "1"}]
+     * @bodyParam answers.*.question_id integer required The question ID. Example: 1
+     * @bodyParam answers.*.selected_answer string required Selected answer (1, 2, or 3). Example: "1"
+     * 
+     * @response 200 scenario="success" {
+     *   "success": true,
+     *   "message": "تم إرسال إجاباتك بنجاح",
+     *   "data": {
+     *     "attempt": {
+     *       "id": 1,
+     *       "score": 3,
+     *       "total_questions": 5,
+     *       "percentage": 60.00,
+     *       "completed_at": "2025-12-13 14:30:00"
+     *     },
+     *     "results": [
+     *       {
+     *         "question_id": 1,
+     *         "question_text": "ما هي عاصمة السعودية؟",
+     *         "selected_answer": "1",
+     *         "correct_answer": "1",
+     *         "is_correct": true
+     *       }
+     *     ]
+     *   }
+     * }
+     */
+    public function submitContestAnswers(Request $request, $id): JsonResponse
+    {
+        try {
+            $request->validate([
+                'answers' => 'required|array|min:1',
+                'answers.*.question_id' => 'required|exists:questions,id',
+                'answers.*.selected_answer' => 'required|in:1,2,3',
+            ]);
+
+            DB::beginTransaction();
+
+            $contest = Contest::with('questions')->findOrFail($id);
+            $user = $request->user();
+
+            // Check if user can attempt
+            if (!$contest->canUserAttempt($user)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'لقد استنفدت عدد محاولاتك المسموح بها',
+                ], 403);
+            }
+
+            if (!$contest->isActive()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'المسابقة غير نشطة حالياً',
+                ], 403);
+            }
+
+            // Create attempt
+            $attempt = \App\Models\ContestAttempt::create([
+                'user_id' => $user->id,
+                'contest_id' => $contest->id,
+                'score' => 0,
+                'total_questions' => $contest->questions->count(),
+                'completed_at' => now(),
+            ]);
+
+            $score = 0;
+            $results = [];
+
+            // Process each answer
+            foreach ($request->answers as $answerData) {
+                $question = Question::findOrFail($answerData['question_id']);
+
+                // Check if question belongs to this contest
+                if ($question->contest_id != $contest->id) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'السؤال لا ينتمي لهذه المسابقة',
+                    ], 400);
+                }
+
+                $isCorrect = $question->isCorrectAnswer($answerData['selected_answer']);
+
+                if ($isCorrect) {
+                    $score++;
+                }
+
+                // Store user answer
+                \App\Models\UserAnswer::create([
+                    'attempt_id' => $attempt->id,
+                    'question_id' => $question->id,
+                    'selected_answer' => $answerData['selected_answer'],
+                    'is_correct' => $isCorrect,
+                ]);
+
+                // Add to results
+                $results[] = [
+                    'question_id' => $question->id,
+                    'question_text' => $question->question_text,
+                    'selected_answer' => $answerData['selected_answer'],
+                    'correct_answer' => $question->correct_answer,
+                    'is_correct' => $isCorrect,
+                ];
+            }
+
+            // Update attempt score
+            $attempt->update(['score' => $score]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم إرسال إجاباتك بنجاح',
+                'data' => [
+                    'attempt' => [
+                        'id' => $attempt->id,
+                        'score' => $attempt->score,
+                        'total_questions' => $attempt->total_questions,
+                        'percentage' => $attempt->percentage,
+                        'completed_at' => $attempt->completed_at->format('Y-m-d H:i:s'),
+                    ],
+                    'results' => $results,
+                ],
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'بيانات غير صحيحة',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'المسابقة أو السؤال غير موجود',
+            ], 404);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء إرسال الإجابات',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

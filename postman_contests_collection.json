@@ -1,0 +1,554 @@
+{
+	"info": {
+		"_postman_id": "farhty-contests-collection",
+		"name": "Farhty API - Contests & Participation",
+		"description": "API Collection for Contest endpoints including participation, questions, and answer submission",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Contest Participation",
+			"item": [
+				{
+					"name": "Get Contest for Attempt",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contests/{{contest_id}}/attempt",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"contests",
+								"{{contest_id}}",
+								"attempt"
+							]
+						},
+						"description": "Get contest details with user's attempt status:\n- Contest information (title, description, image, terms)\n- User status (attempts used, remaining, can attempt)\n- Last attempt score and percentage"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Contest Questions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contests/{{contest_id}}/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"contests",
+								"{{contest_id}}",
+								"questions"
+							]
+						},
+						"description": "Get all questions for a contest (without correct answers).\n\nNOTE: User must have remaining attempts and contest must be active."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Contest Answers",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answers\": [\n        {\n            \"question_id\": 1,\n            \"selected_answer\": \"1\"\n        },\n        {\n            \"question_id\": 2,\n            \"selected_answer\": \"2\"\n        },\n        {\n            \"question_id\": 3,\n            \"selected_answer\": \"3\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/contests/{{contest_id}}/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"contests",
+								"{{contest_id}}",
+								"submit"
+							]
+						},
+						"description": "Submit user's answers for a contest.\n\nReturns:\n- Attempt details (id, score, percentage)\n- Detailed results for each question (correct/incorrect)\n\nNOTE: Each answer's selected_answer must be \"1\", \"2\", or \"3\""
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for participating in contests"
+		},
+		{
+			"name": "Contest Browsing",
+			"item": [
+				{
+					"name": "Get All Active Contests",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contests",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"contests"
+							]
+						},
+						"description": "Get list of all active contests (is_active=true and end_date >= now)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Contest Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contests/{{contest_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"contests",
+								"{{contest_id}}"
+							]
+						},
+						"description": "Get detailed information about a specific contest including platform, celebrity, questions, and terms"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Contests",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contests/my-contests",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"contests",
+								"my-contests"
+							]
+						},
+						"description": "Get all contests created by the authenticated user (Celebrity only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for browsing and viewing contests"
+		},
+		{
+			"name": "Contest Management (Celebrity)",
+			"item": [
+				{
+					"name": "Get My Platforms",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/platforms",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"platforms"
+							]
+						},
+						"description": "Get all social media platforms associated with the authenticated celebrity (used when creating a contest)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contest",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "platform_id",
+									"value": "1",
+									"description": "Platform ID (required)",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "مسابقة TikTok الكبرى",
+									"description": "Contest title (required)",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "اختبر معلوماتك في مسابقة ممتعة",
+									"description": "Contest description (optional)",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"description": "Contest image (optional, max 6MB)",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "start_date",
+									"value": "2025-12-13 00:00:00",
+									"description": "Start date (required)",
+									"type": "text"
+								},
+								{
+									"key": "end_date",
+									"value": "2025-12-31 23:59:59",
+									"description": "End date (required)",
+									"type": "text"
+								},
+								{
+									"key": "max_attempts",
+									"value": "3",
+									"description": "Max attempts (1-10, required)",
+									"type": "text"
+								},
+								{
+									"key": "terms[]",
+									"value": "يجب أن تكون متابعاً للحساب",
+									"description": "Term 1 (optional)",
+									"type": "text"
+								},
+								{
+									"key": "terms[]",
+									"value": "يجب مشاركة المسابقة في قصتك",
+									"description": "Term 2 (optional)",
+									"type": "text"
+								},
+								{
+									"key": "questions[0][question_text]",
+									"value": "ما هي عاصمة السعودية؟",
+									"description": "Question 1 text",
+									"type": "text"
+								},
+								{
+									"key": "questions[0][option_1]",
+									"value": "الرياض",
+									"description": "Question 1 - Option 1",
+									"type": "text"
+								},
+								{
+									"key": "questions[0][option_2]",
+									"value": "جدة",
+									"description": "Question 1 - Option 2",
+									"type": "text"
+								},
+								{
+									"key": "questions[0][option_3]",
+									"value": "مكة",
+									"description": "Question 1 - Option 3",
+									"type": "text"
+								},
+								{
+									"key": "questions[0][correct_answer]",
+									"value": "1",
+									"description": "Question 1 - Correct answer (1, 2, or 3)",
+									"type": "text"
+								},
+								{
+									"key": "questions[1][question_text]",
+									"value": "ما هي عملة السعودية؟",
+									"description": "Question 2 text",
+									"type": "text"
+								},
+								{
+									"key": "questions[1][option_1]",
+									"value": "ريال",
+									"description": "Question 2 - Option 1",
+									"type": "text"
+								},
+								{
+									"key": "questions[1][option_2]",
+									"value": "دينار",
+									"description": "Question 2 - Option 2",
+									"type": "text"
+								},
+								{
+									"key": "questions[1][option_3]",
+									"value": "درهم",
+									"description": "Question 2 - Option 3",
+									"type": "text"
+								},
+								{
+									"key": "questions[1][correct_answer]",
+									"value": "1",
+									"description": "Question 2 - Correct answer (1, 2, or 3)",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/contests",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"contests"
+							]
+						},
+						"description": "Create a new contest (Celebrity only)\n\nRequired fields:\n- platform_id\n- title\n- start_date\n- end_date\n- max_attempts\n- questions (at least 1)\n\nOptional fields:\n- description\n- image\n- terms"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for celebrities to manage contests"
+		},
+		{
+			"name": "Authentication (Helper)",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"access_token\", jsonData.data.token);",
+									"        console.log(\"Token saved: \" + jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						},
+						"description": "Login to get OTP"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"access_token\", jsonData.data.token);",
+									"        console.log(\"Token saved: \" + jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01234567890\",\n    \"otp\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/verify-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"verify-otp"
+							]
+						},
+						"description": "Verify OTP and get access token (automatically saves to environment)"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints to get access token"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "contest_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

@@ -33,6 +33,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contests/my-contests', [ContestController::class, 'myContests']);
     Route::get('/contests/{id}', [ContestController::class, 'show']);
 
+    // Contest Participation Routes
+    Route::get('/contests/{id}/attempt', [ContestController::class, 'getContestForAttempt']); // Get contest with attempt status
+    Route::get('/contests/{id}/questions', [ContestController::class, 'getContestQuestions']); // Get contest questions
+    Route::post('/contests/{id}/submit', [ContestController::class, 'submitContestAnswers']); // Submit answers
+
     // Story Routes (3 endpoints only)
     Route::get('/stories', [StoryController::class, 'index']); // Get all stories
     Route::post('/stories', [StoryController::class, 'store']); // Create story
