@@ -66,6 +66,7 @@ class HomeController extends Controller
                             'id' => $platform->id,
                             'name' => $platform->name,
                             'display_name' => $platform->display_name,
+                            'name_ar' => $platform->name_ar,
                             'created_at' => $platform->created_at->format('Y-m-d H:i:s'),
                         ];
                     }),
@@ -225,7 +226,7 @@ class HomeController extends Controller
                 'platform_id' => 'required|exists:platforms,id',
             ]);
 
-            $platform = Platform::find($request->platform_id)->select('id', 'name', 'display_name')->first();
+            $platform = Platform::find($request->platform_id)->select('id', 'name', 'display_name', 'name_ar')->first();
 
             $contests = Contest::with(['platform', 'user'])
                 ->where('platform_id', $request->platform_id)

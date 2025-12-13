@@ -61,7 +61,7 @@ class CelebrityController extends Controller
         $celebrity = User::where('id', $id)
             ->where('role', 'celebrity')
             ->with([
-                'platforms:id,name,icon',
+                'platforms:id,name,name_ar,icon',
                 'posts' => function ($query) {
                     $query->orderBy('created_at', 'desc')->limit(10);
                 },

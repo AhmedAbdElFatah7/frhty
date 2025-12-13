@@ -16,6 +16,7 @@ class PlatformSeeder extends Seeder
             [
                 'name' => 'tiktok',
                 'display_name' => 'TikTok',
+                'name_ar' => 'تيك توك',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -23,6 +24,7 @@ class PlatformSeeder extends Seeder
             [
                 'name' => 'snapchat',
                 'display_name' => 'Snapchat',
+                'name_ar' => 'سناب شات',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -30,6 +32,7 @@ class PlatformSeeder extends Seeder
             [
                 'name' => 'youtube',
                 'display_name' => 'YouTube',
+                'name_ar' => 'يوتيوب',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -37,6 +40,7 @@ class PlatformSeeder extends Seeder
             [
                 'name' => 'x',
                 'display_name' => 'X (Twitter)',
+                'name_ar' => 'إكس',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -44,6 +48,7 @@ class PlatformSeeder extends Seeder
             [
                 'name' => 'instagram',
                 'display_name' => 'Instagram',
+                'name_ar' => 'إنستجرام',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -51,6 +56,7 @@ class PlatformSeeder extends Seeder
             [
                 'name' => 'store',
                 'display_name' => 'Store',
+                'name_ar' => 'متجر',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

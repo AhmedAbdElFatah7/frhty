@@ -67,6 +67,7 @@ class ContestController extends Controller
                         'id' => $platform->id,
                         'name' => $platform->name,
                         'display_name' => $platform->display_name,
+                        'name_ar' => $platform->name_ar,
                         'account_url' => $platform->pivot->account_url,
                         'followers_count' => $platform->pivot->followers_count,
                     ];
@@ -310,6 +311,7 @@ class ContestController extends Controller
                                 'id' => $contest->platform->id,
                                 'name' => $contest->platform->name,
                                 'display_name' => $contest->platform->display_name,
+                                'name_ar' => $contest->platform->name_ar,
                             ],
                             'celebrity' => [
                                 'id' => $contest->user->id,
@@ -406,6 +408,7 @@ class ContestController extends Controller
                             'id' => $contest->platform->id,
                             'name' => $contest->platform->name,
                             'display_name' => $contest->platform->display_name,
+                            'name_ar' => $contest->platform->name_ar,
                         ],
                         'celebrity' => [
                             'id' => $contest->user->id,
