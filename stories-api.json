@@ -1,0 +1,394 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Stories API",
+    "description": "API endpoints for Stories system",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000/api",
+      "description": "Local server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/contests/my-contests": {
+      "get": {
+        "summary": "Get My Contests",
+        "description": "جلب المسابقات الخاصة بالمستخدم المسجل واللي لسه وقتها مخلصش",
+        "tags": ["Contests"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "تم جلب مسابقاتك بنجاح"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "مسابقة TikTok"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/stories": {
+      "get": {
+        "summary": "Get All Stories",
+        "description": "جلب كل الستوريز النشطة مع إمكانية الفلترة",
+        "tags": ["Stories"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "description": "فلتر حسب معرف المستخدم",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5
+            }
+          },
+          {
+            "name": "contest_id",
+            "in": "query",
+            "description": "فلتر حسب معرف المسابقة",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "رقم الصفحة",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "تم جلب الستوريز بنجاح"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "example": 1
+                              },
+                              "media_path": {
+                                "type": "string",
+                                "example": "stories/images/xxx.jpg"
+                              },
+                              "media_type": {
+                                "type": "string",
+                                "enum": ["image", "video"],
+                                "example": "image"
+                              },
+                              "caption": {
+                                "type": "string",
+                                "example": "نص توضيحي للستوري"
+                              },
+                              "expires_at": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2025-12-12 12:00:00"
+                              },
+                              "is_active": {
+                                "type": "boolean",
+                                "example": true
+                              },
+                              "user": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "example": "أحمد محمد"
+                                  },
+                                  "user_name": {
+                                    "type": "string",
+                                    "example": "ahmed123"
+                                  },
+                                  "image": {
+                                    "type": "string",
+                                    "nullable": true,
+                                    "example": null
+                                  }
+                                }
+                              },
+                              "contest": {
+                                "type": "object",
+                                "nullable": true,
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "example": "مسابقة TikTok"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "total": {
+                          "type": "integer",
+                          "example": 50
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Story",
+        "description": "إنشاء ستوري جديد (الميديا والكابشن اختياريين)",
+        "tags": ["Stories"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "media": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "صورة أو فيديو (اختياري، max 50MB)"
+                  },
+                  "media_type": {
+                    "type": "string",
+                    "enum": ["image", "video"],
+                    "description": "نوع الملف (اختياري)",
+                    "example": "image"
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "description": "النص التوضيحي (اختياري)",
+                    "example": "ستوري جديد للمسابقة"
+                  },
+                  "contest_id": {
+                    "type": "integer",
+                    "description": "معرف المسابقة (اختياري)",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created Successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "تم إضافة الستوري بنجاح"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "story": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "media_path": {
+                              "type": "string",
+                              "nullable": true,
+                              "example": "http://localhost:8000/storage/stories/images/xxx.jpg"
+                            },
+                            "media_type": {
+                              "type": "string",
+                              "example": "image"
+                            },
+                            "caption": {
+                              "type": "string",
+                              "nullable": true,
+                              "example": "ستوري جديد"
+                            },
+                            "expires_at": {
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2025-12-12 12:00:00"
+                            },
+                            "user": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "integer",
+                                  "example": 1
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "example": "أحمد محمد"
+                                },
+                                "user_name": {
+                                  "type": "string",
+                                  "example": "ahmed123"
+                                },
+                                "image": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "example": null
+                                }
+                              }
+                            },
+                            "contest": {
+                              "type": "object",
+                              "nullable": true,
+                              "properties": {
+                                "id": {
+                                  "type": "integer",
+                                  "example": 1
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "example": "مسابقة TikTok"
+                                }
+                              }
+                            },
+                            "created_at": {
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2025-12-11 12:00:00"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Validation Error"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    }
+  }
+}

@@ -89,4 +89,12 @@ class Contest extends Model
 
         return $attemptsCount < $this->max_attempts;
     }
+
+    /**
+     * Get the stories related to this contest.
+     */
+    public function stories(): HasMany
+    {
+        return $this->hasMany(Story::class);
+    }
 }

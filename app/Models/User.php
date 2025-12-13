@@ -111,4 +111,12 @@ class User extends Authenticatable
     {
         return $this->following()->count();
     }
+
+    /**
+     * Get the stories created by this user.
+     */
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
+    }
 }

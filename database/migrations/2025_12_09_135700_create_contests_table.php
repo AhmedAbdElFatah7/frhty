@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
             $table->boolean('is_active')->default(true);
             $table->integer('max_attempts')->default(1); // How many times a user can attempt
             $table->timestamps();
