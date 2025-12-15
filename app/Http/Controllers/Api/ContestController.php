@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreContestRequest;
 use App\Models\Contest;
 use App\Models\ContestTerm;
+use App\Models\ContestPrize;
 use App\Models\Question;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -95,6 +96,9 @@ class ContestController extends Controller
      * @bodyParam max_attempts integer required Maximum attempts allowed (1-10). Example: 3
      * @bodyParam terms array optional Array of contest terms.
      * @bodyParam terms.* string optional Contest term text. Example: يجب أن تكون متابعاً للحساب
+     * @bodyParam prizes array optional Array of contest prizes.
+     * @bodyParam prizes.*.prize string optional Prize description. Example: جهاز آيفون 15 برو
+     * @bodyParam prizes.*.rank integer optional Winner rank (1st, 2nd, 3rd). Example: 1
      * @bodyParam questions array required Array of questions (min 1).
      * @bodyParam questions.*.question_text string required Question text. Example: ما هي عاصمة السعودية؟
      * @bodyParam questions.*.option_1 string required First option. Example: الرياض
@@ -172,6 +176,18 @@ class ContestController extends Controller
                 }
             }
 
+            // Add prizes if provided
+            if ($request->has('prizes') && is_array($request->prizes)) {
+                foreach ($request->prizes as $index => $prizeData) {
+                    ContestPrize::create([
+                        'contest_id' => $contest->id,
+                        'prize' => $prizeData['prize'] ?? $prizeData,
+                        'rank' => $prizeData['rank'] ?? ($index + 1),
+                        'order' => $index + 1,
+                    ]);
+                }
+            }
+
             // Add questions
             foreach ($request->questions as $index => $questionData) {
                 Question::create([
@@ -188,7 +204,7 @@ class ContestController extends Controller
             DB::commit();
 
             // Load relationships for response
-            $contest->load(['platform', 'questions', 'terms', 'user']);
+            $contest->load(['platform', 'questions', 'terms', 'prizes', 'user']);
 
             return response()->json([
                 'success' => true,
@@ -220,6 +236,14 @@ class ContestController extends Controller
                                 'order' => $term->order,
                             ];
                         }),
+                        'prizes' => $contest->prizes->map(function ($prize) {
+                            return [
+                                'id' => $prize->id,
+                                'prize' => $prize->prize,
+                                'rank' => $prize->rank,
+                                'order' => $prize->order,
+                            ];
+                        }),
                         'questions' => $contest->questions->map(function ($question) {
                             return [
                                 'id' => $question->id,
@@ -235,6 +259,7 @@ class ContestController extends Controller
                         }),
                         'questions_count' => $contest->questions->count(),
                         'terms_count' => $contest->terms->count(),
+                        'prizes_count' => $contest->prizes->count(),
                         'created_at' => $contest->created_at->format('Y-m-d H:i:s'),
                     ],
                 ],
@@ -289,7 +314,7 @@ class ContestController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $contests = Contest::with(['platform', 'user', 'questions', 'terms'])
+            $contests = Contest::with(['platform', 'user', 'questions', 'terms', 'prizes'])
                 ->where('is_active', true)
                 ->where('end_date', '>=', now())
                 ->orderBy('created_at', 'desc')
@@ -320,6 +345,7 @@ class ContestController extends Controller
                             ],
                             'questions_count' => $contest->questions->count(),
                             'terms_count' => $contest->terms->count(),
+                            'prizes_count' => $contest->prizes->count(),
                             'is_active' => $contest->isActive(),
                         ];
                     }),
@@ -389,7 +415,7 @@ class ContestController extends Controller
     public function show($id): JsonResponse
     {
         try {
-            $contest = Contest::with(['platform', 'user', 'questions', 'terms'])
+            $contest = Contest::with(['platform', 'user', 'questions', 'terms', 'prizes'])
                 ->findOrFail($id);
 
             return response()->json([
@@ -423,6 +449,14 @@ class ContestController extends Controller
                                 'order' => $term->order,
                             ];
                         }),
+                        'prizes' => $contest->prizes->map(function ($prize) {
+                            return [
+                                'id' => $prize->id,
+                                'prize' => $prize->prize,
+                                'rank' => $prize->rank,
+                                'order' => $prize->order,
+                            ];
+                        }),
                         'questions' => $contest->questions->map(function ($question) {
                             return [
                                 'id' => $question->id,
@@ -437,6 +471,7 @@ class ContestController extends Controller
                         }),
                         'questions_count' => $contest->questions->count(),
                         'terms_count' => $contest->terms->count(),
+                        'prizes_count' => $contest->prizes->count(),
                     ],
                 ],
             ], 200);
@@ -539,7 +574,7 @@ class ContestController extends Controller
     public function getContestForAttempt(Request $request, $id): JsonResponse
     {
         try {
-            $contest = Contest::with(['platform', 'user', 'terms'])
+            $contest = Contest::with(['platform', 'user', 'terms', 'prizes'])
                 ->withCount('questions')
                 ->findOrFail($id);
 
@@ -587,6 +622,14 @@ class ContestController extends Controller
                                 'id' => $term->id,
                                 'term' => $term->term,
                                 'order' => $term->order,
+                            ];
+                        }),
+                        'prizes' => $contest->prizes->map(function ($prize) {
+                            return [
+                                'id' => $prize->id,
+                                'prize' => $prize->prize,
+                                'rank' => $prize->rank,
+                                'order' => $prize->order,
                             ];
                         }),
                     ],

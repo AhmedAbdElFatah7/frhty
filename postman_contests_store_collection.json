@@ -1,0 +1,588 @@
+{
+	"info": {
+		"name": "Contest Store API",
+		"description": "API endpoints for creating contests with prizes, terms, and questions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{celebrity_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Create Contest - Full Example with Prizes (Object Format)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "platform_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "مسابقة رمضان الكبرى 2025",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "شارك معنا في مسابقة رمضان واربح جوائز قيمة",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "start_date",
+							"value": "2025-03-01 00:00:00",
+							"type": "text"
+						},
+						{
+							"key": "end_date",
+							"value": "2025-03-30 23:59:59",
+							"type": "text"
+						},
+						{
+							"key": "max_attempts",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "terms[0]",
+							"value": "يجب أن تكون متابعاً للحساب على جميع المنصات",
+							"type": "text"
+						},
+						{
+							"key": "terms[1]",
+							"value": "سيتم الإعلان عن الفائزين في نهاية رمضان",
+							"type": "text"
+						},
+						{
+							"key": "terms[2]",
+							"value": "الجوائز غير قابلة للتحويل النقدي",
+							"type": "text"
+						},
+						{
+							"key": "prizes[0][prize]",
+							"value": "سيارة موديل 2025",
+							"type": "text"
+						},
+						{
+							"key": "prizes[0][rank]",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "prizes[1][prize]",
+							"value": "رحلة عمرة لشخصين",
+							"type": "text"
+						},
+						{
+							"key": "prizes[1][rank]",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "prizes[2][prize]",
+							"value": "جهاز آيفون 15 برو ماكس",
+							"type": "text"
+						},
+						{
+							"key": "prizes[2][rank]",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "prizes[3][prize]",
+							"value": "ساعة أبل الجديدة",
+							"type": "text"
+						},
+						{
+							"key": "prizes[3][rank]",
+							"value": "4",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][question_text]",
+							"value": "ما هي عاصمة المملكة العربية السعودية؟",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_1]",
+							"value": "الرياض",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_2]",
+							"value": "جدة",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_3]",
+							"value": "مكة المكرمة",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][correct_answer]",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][question_text]",
+							"value": "كم عدد أركان الإسلام؟",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][option_1]",
+							"value": "4",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][option_2]",
+							"value": "5",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][option_3]",
+							"value": "6",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][correct_answer]",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "questions[2][question_text]",
+							"value": "في أي سنة كانت غزوة بدر؟",
+							"type": "text"
+						},
+						{
+							"key": "questions[2][option_1]",
+							"value": "1 هجري",
+							"type": "text"
+						},
+						{
+							"key": "questions[2][option_2]",
+							"value": "2 هجري",
+							"type": "text"
+						},
+						{
+							"key": "questions[2][option_3]",
+							"value": "3 هجري",
+							"type": "text"
+						},
+						{
+							"key": "questions[2][correct_answer]",
+							"value": "2",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": ["{{base_url}}"],
+					"path": ["api", "contests"]
+				},
+				"description": "إنشاء مسابقة كاملة مع جوائز (Object format)، شروط، وأسئلة. يتطلب Celebrity token."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contest - Simple Prizes (String Format)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "platform_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "مسابقة TikTok السريعة",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "مسابقة سريعة للمتابعين",
+							"type": "text"
+						},
+						{
+							"key": "start_date",
+							"value": "2025-12-20 00:00:00",
+							"type": "text"
+						},
+						{
+							"key": "end_date",
+							"value": "2025-12-25 23:59:59",
+							"type": "text"
+						},
+						{
+							"key": "max_attempts",
+							"value": "5",
+							"type": "text"
+						},
+						{
+							"key": "prizes[0]",
+							"value": "جائزة نقدية 10000 ريال",
+							"type": "text"
+						},
+						{
+							"key": "prizes[1]",
+							"value": "جهاز آيفون 15 برو",
+							"type": "text"
+						},
+						{
+							"key": "prizes[2]",
+							"value": "ساعة أبل ووتش",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][question_text]",
+							"value": "ما اسم التطبيق؟",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_1]",
+							"value": "TikTok",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_2]",
+							"value": "Instagram",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_3]",
+							"value": "Snapchat",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][correct_answer]",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": ["{{base_url}}"],
+					"path": ["api", "contests"]
+				},
+				"description": "إنشاء مسابقة بجوائز بسيطة (String format). الـ rank سيتم تعيينه تلقائياً."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contest - Without Prizes",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "platform_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "مسابقة ثقافية",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "للترفيه والتعليم فقط",
+							"type": "text"
+						},
+						{
+							"key": "start_date",
+							"value": "2025-12-18 00:00:00",
+							"type": "text"
+						},
+						{
+							"key": "end_date",
+							"value": "2025-12-22 23:59:59",
+							"type": "text"
+						},
+						{
+							"key": "max_attempts",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "terms[0]",
+							"value": "المشاركة مفتوحة للجميع",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][question_text]",
+							"value": "ما هو لون السماء؟",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_1]",
+							"value": "أزرق",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_2]",
+							"value": "أحمر",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_3]",
+							"value": "أخضر",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][correct_answer]",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][question_text]",
+							"value": "كم عدد أيام الأسبوع؟",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][option_1]",
+							"value": "5",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][option_2]",
+							"value": "6",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][option_3]",
+							"value": "7",
+							"type": "text"
+						},
+						{
+							"key": "questions[1][correct_answer]",
+							"value": "3",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": ["{{base_url}}"],
+					"path": ["api", "contests"]
+				},
+				"description": "إنشاء مسابقة بدون جوائز. الجوائز اختيارية تماماً."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contest - Minimum Required Fields",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "platform_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "مسابقة بسيطة",
+							"type": "text"
+						},
+						{
+							"key": "start_date",
+							"value": "2025-12-16 00:00:00",
+							"type": "text"
+						},
+						{
+							"key": "end_date",
+							"value": "2025-12-20 23:59:59",
+							"type": "text"
+						},
+						{
+							"key": "max_attempts",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][question_text]",
+							"value": "سؤال تجريبي؟",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_1]",
+							"value": "نعم",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_2]",
+							"value": "لا",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_3]",
+							"value": "ربما",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][correct_answer]",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": ["{{base_url}}"],
+					"path": ["api", "contests"]
+				},
+				"description": "إنشاء مسابقة بالحد الأدنى من الحقول المطلوبة فقط."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contest - With Image",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "platform_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "مسابقة مع صورة",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "مسابقة بصورة جذابة",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": [],
+							"description": "اختر صورة (jpeg, png, jpg, gif, webp - max 6MB)"
+						},
+						{
+							"key": "start_date",
+							"value": "2025-12-16 00:00:00",
+							"type": "text"
+						},
+						{
+							"key": "end_date",
+							"value": "2025-12-25 23:59:59",
+							"type": "text"
+						},
+						{
+							"key": "max_attempts",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "prizes[0]",
+							"value": "جائزة كبرى",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][question_text]",
+							"value": "سؤال مع صورة؟",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_1]",
+							"value": "نعم",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_2]",
+							"value": "لا",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][option_3]",
+							"value": "ربما",
+							"type": "text"
+						},
+						{
+							"key": "questions[0][correct_answer]",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/contests",
+					"host": ["{{base_url}}"],
+					"path": ["api", "contests"]
+				},
+				"description": "إنشاء مسابقة مع صورة. الصورة اختيارية ولكن إذا تم إرفاقها يجب أن تكون بالصيغ المدعومة."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "celebrity_token",
+			"value": "",
+			"type": "string",
+			"description": "Celebrity user authentication token"
+		}
+	]
+}

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ChatController;
 
 // Public routes (Authentication only)
 Route::post('/register', [AuthController::class, 'register']);
@@ -65,6 +66,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']); // Get unread count
     Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead']); // Mark as read
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']); // Mark all as read
+
+    // Chat Routes
+    Route::get('/conversations', [ChatController::class, 'index']); // Get all conversations
+    Route::get('/conversations/{userId}', [ChatController::class, 'show']); // Get or create conversation with user
+    Route::post('/messages/send', [ChatController::class, 'sendMessage']); // Send message
+    Route::delete('/conversations/{conversationId}', [ChatController::class, 'deleteConversation']); // Delete conversation
+    Route::get('/messages/unread-count', [ChatController::class, 'unreadCount']); // Get unread messages count
 
     // Celebrity Routes
     Route::get('/platforms', [ContestController::class, 'platforms']); // Celebrity only

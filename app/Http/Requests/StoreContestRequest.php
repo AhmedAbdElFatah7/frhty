@@ -25,7 +25,7 @@ class StoreContestRequest extends FormRequest
             'platform_id' => 'required|exists:platforms,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:6000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:6000',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
             'max_attempts' => 'required|integer|min:1|max:10',
@@ -33,6 +33,12 @@ class StoreContestRequest extends FormRequest
             // Terms (optional)
             'terms' => 'nullable|array',
             'terms.*' => 'required|string|max:500',
+
+            // Prizes (optional)
+            'prizes' => 'nullable|array',
+            'prizes.*' => 'required', // Can be string or array
+            'prizes.*.prize' => 'required_if:prizes.*,array|string|max:255',
+            'prizes.*.rank' => 'nullable|integer|min:1',
 
             // Questions (required, at least 1)
             'questions' => 'required|array|min:1',
@@ -55,7 +61,6 @@ class StoreContestRequest extends FormRequest
             'platform_id.exists' => 'المنصة المحددة غير موجودة',
             'title.required' => 'عنوان المسابقة مطلوب',
             'title.max' => 'عنوان المسابقة طويل جداً',
-            'image.required' => 'صورة المسابقة مطلوبة',
             'image.image' => 'الملف يجب أن يكون صورة',
             'image.mimes' => 'صيغة الصورة غير مدعومة (jpeg, png, jpg, gif, webp)',
             'image.max' => 'حجم الصورة يجب ألا يتجاوز 6 ميجابايت',
@@ -71,6 +76,15 @@ class StoreContestRequest extends FormRequest
             'terms.array' => 'الشروط يجب أن تكون مصفوفة',
             'terms.*.required' => 'نص الشرط مطلوب',
             'terms.*.max' => 'نص الشرط طويل جداً',
+
+            // Prizes messages
+            'prizes.array' => 'الجوائز يجب أن تكون مصفوفة',
+            'prizes.*.required' => 'بيانات الجائزة مطلوبة',
+            'prizes.*.prize.required_if' => 'وصف الجائزة مطلوب',
+            'prizes.*.prize.string' => 'وصف الجائزة يجب أن يكون نصاً',
+            'prizes.*.prize.max' => 'وصف الجائزة طويل جداً',
+            'prizes.*.rank.integer' => 'ترتيب الجائزة يجب أن يكون رقماً',
+            'prizes.*.rank.min' => 'ترتيب الجائزة يجب أن يكون 1 على الأقل',
 
             // Questions messages
             'questions.required' => 'يجب إضافة سؤال واحد على الأقل',

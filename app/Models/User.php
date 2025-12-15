@@ -144,4 +144,23 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class);
     }
+
+    /**
+     * Get all conversations where this user is participant
+     */
+    public function conversations()
+    {
+        return Conversation::where('user_one_id', $this->id)
+            ->orWhere('user_two_id', $this->id)
+            ->orderBy('last_message_at', 'desc')
+            ->get();
+    }
+
+    /**
+     * Get messages sent by this user
+     */
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
 }

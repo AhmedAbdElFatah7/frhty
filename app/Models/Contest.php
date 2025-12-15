@@ -70,6 +70,14 @@ class Contest extends Model
     }
 
     /**
+     * Get the prizes for this contest.
+     */
+    public function prizes(): HasMany
+    {
+        return $this->hasMany(ContestPrize::class)->orderBy('order');
+    }
+
+    /**
      * Check if contest is currently active.
      */
     public function isActive(): bool
