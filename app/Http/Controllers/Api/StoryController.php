@@ -112,4 +112,55 @@ class StoryController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Mark a story as viewed by the authenticated user.
+     * 
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function markAsViewed(Request $request, $id)
+    {
+        try {
+            $user = $request->user();
+
+            $story = Story::find($id);
+
+            if (!$story) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الستوري غير موجودة',
+                ], 404);
+            }
+
+            // Check if story is viewable
+            if (!$story->isViewable()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الستوري غير متاحة للمشاهدة',
+                ], 403);
+            }
+
+            // Record the view (will not duplicate if already viewed)
+            $view = $story->recordView($user->id);
+
+            $wasAlreadyViewed = !$view->wasRecentlyCreated;
+
+            return response()->json([
+                'success' => true,
+                'message' => $wasAlreadyViewed ? 'تم تسجيل المشاهدة مسبقاً' : 'تم تسجيل المشاهدة بنجاح',
+                'data' => [
+                    'story_id' => $story->id,
+                    'views_count' => $story->views()->count(),
+                    'already_viewed' => $wasAlreadyViewed,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء تسجيل المشاهدة',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

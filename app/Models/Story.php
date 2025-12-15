@@ -93,4 +93,40 @@ class Story extends Model
     {
         return $query->active()->notExpired();
     }
+
+    /**
+     * Get all views for this story.
+     */
+    public function views()
+    {
+        return $this->hasMany(StoryView::class);
+    }
+
+    /**
+     * Get the count of views for this story.
+     */
+    public function viewsCount()
+    {
+        return $this->views()->count();
+    }
+
+    /**
+     * Check if a user has viewed this story.
+     */
+    public function isViewedBy($userId)
+    {
+        return $this->views()->where('user_id', $userId)->exists();
+    }
+
+    /**
+     * Record a view for this story by a user.
+     */
+    public function recordView($userId)
+    {
+        return $this->views()->firstOrCreate([
+            'user_id' => $userId,
+        ], [
+            'viewed_at' => now(),
+        ]);
+    }
 }

@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Story Routes (3 endpoints only)
     Route::get('/stories', [StoryController::class, 'index']); // Get all stories
     Route::post('/stories', [StoryController::class, 'store']); // Create story
+    Route::post('/stories/{id}/view', [StoryController::class, 'markAsViewed']); // Mark story as viewed
 
     // Post Routes
     Route::get('/posts', [PostController::class, 'index']); // Get all posts

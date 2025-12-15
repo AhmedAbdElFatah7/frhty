@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Platform;
 use App\Models\Contest;
+use App\Models\Story;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -109,7 +110,32 @@ class HomeController extends Controller
      *         "max_attempts": 3
      *       }
      *     ],
-     *     "total": 2
+     *     "stories": [
+     *       {
+     *         "user": {
+     *           "id": 1,
+     *           "name": "أحمد محمد",
+     *           "user_name": "ahmed_m",
+     *           "image": "http://localhost:8000/storage/users/ahmed.jpg"
+     *         },
+     *         "stories": [
+     *           {
+     *             "id": 1,
+     *             "media_path": "http://localhost:8000/storage/stories/video.mp4",
+     *             "media_type": "video",
+     *             "caption": "شاركت في المسابقة",
+     *             "contest_id": 1,
+     *             "contest_title": "مسابقة TikTok الكبرى",
+     *             "views_count": 150,
+     *             "is_viewed": true,
+     *             "created_at": "2025-12-15 12:00:00",
+     *             "expires_at": "2025-12-16 12:00:00"
+     *           }
+     *         ]
+     *       }
+     *     ],
+     *     "total_contests": 2,
+     *     "total_stories_groups": 1
      *   }
      * }
      * 
@@ -127,7 +153,7 @@ class HomeController extends Controller
      *   "error": "Error details"
      * }
      */
-    public function getLatestContestsPerPlatform(): JsonResponse
+    public function getLatestContestsPerPlatform(Request $request): JsonResponse
     {
         try {
             $platforms = Platform::with(['contests' => function ($query) {
@@ -162,11 +188,50 @@ class HomeController extends Controller
                 }
             }
 
+            // Get all viewable stories (not filtered by contests)
+            $stories = Story::with(['user', 'contest'])
+                ->withCount('views') // Add views count
+                ->viewable() // Active and not expired (assuming this is a scope on Story model)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Current user ID for checking if they viewed the story
+            $currentUserId = $request->user() ? $request->user()->id : null; // Handle unauthenticated users
+
+            // Group stories by user
+            $storiesGrouped = $stories->groupBy('user_id')->map(function ($userStories) use ($currentUserId) {
+                $user = $userStories->first()->user;
+                return [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'user_name' => $user->user_name,
+                        'image' => $user->image ? asset('storage/' . $user->image) : null,
+                    ],
+                    'stories' => $userStories->map(function ($story) use ($currentUserId) {
+                        return [
+                            'id' => $story->id,
+                            'media_path' => $story->media_path ? asset('storage/' . $story->media_path) : null,
+                            'media_type' => $story->media_type,
+                            'caption' => $story->caption,
+                            'contest_id' => $story->contest_id,
+                            'contest_title' => $story->contest ? $story->contest->title : null,
+                            'views_count' => $story->views_count, // Total views
+                            'is_viewed' => $currentUserId ? $story->isViewedBy($currentUserId) : false, // Did current user view it?
+                            'created_at' => $story->created_at->format('Y-m-d H:i:s'),
+                            'expires_at' => $story->expires_at ? $story->expires_at->format('Y-m-d H:i:s') : null,
+                        ];
+                    })->values(),
+                ];
+            })->values();
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'contests' => $result,
-                    'total' => count($result),
+                    'stories' => $storiesGrouped, // Add stories to the response
+                    'total_contests' => count($result),
+                    'total_stories_groups' => count($storiesGrouped),
                 ],
             ], 200);
         } catch (\Exception $e) {
@@ -202,6 +267,30 @@ class HomeController extends Controller
      *         },
      *         "days_ago": "منذ 5 ساعات"
      *       }
+     *     ],
+     *     "stories": [
+     *       {
+     *         "user": {
+     *           "id": 2,
+     *           "name": "محمد علي",
+     *           "user_name": "mohamed_ali",
+     *           "image": "http://localhost:8000/storage/users/user2.jpg"
+     *         },
+     *         "stories": [
+     *           {
+     *             "id": 1,
+     *             "media_path": "http://localhost:8000/storage/stories/video.mp4",
+     *             "media_type": "video",
+     *             "caption": "شاركت في المسابقة",
+     *             "contest_id": 1,
+     *             "contest_title": "مسابقة TikTok الكبرى",
+     *             "views_count": 150,
+     *             "is_viewed": true,
+     *             "created_at": "2025-12-15 12:00:00",
+     *             "expires_at": "2025-12-16 12:00:00"
+     *           }
+     *         ]
+     *       }
      *     ]
      *   }
      * }
@@ -235,6 +324,43 @@ class HomeController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
 
+            // Get all viewable stories (not filtered by platform)
+            $stories = Story::with(['user', 'contest'])
+                ->withCount('views') // Add views count
+                ->viewable() // Active and not expired
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Current user ID for checking if they viewed the story
+            $currentUserId = $request->user()->id;
+
+            // Group stories by user
+            $storiesGrouped = $stories->groupBy('user_id')->map(function ($userStories) use ($currentUserId) {
+                $user = $userStories->first()->user;
+                return [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'user_name' => $user->user_name,
+                        'image' => $user->image ? asset('storage/' . $user->image) : null,
+                    ],
+                    'stories' => $userStories->map(function ($story) use ($currentUserId) {
+                        return [
+                            'id' => $story->id,
+                            'media_path' => $story->media_path ? asset('storage/' . $story->media_path) : null,
+                            'media_type' => $story->media_type,
+                            'caption' => $story->caption,
+                            'contest_id' => $story->contest_id,
+                            'contest_title' => $story->contest ? $story->contest->title : null,
+                            'views_count' => $story->views_count, // Total views
+                            'is_viewed' => $story->isViewedBy($currentUserId), // Did current user view it?
+                            'created_at' => $story->created_at->format('Y-m-d H:i:s'),
+                            'expires_at' => $story->expires_at ? $story->expires_at->format('Y-m-d H:i:s') : null,
+                        ];
+                    })->values(),
+                ];
+            })->values();
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -253,6 +379,7 @@ class HomeController extends Controller
                             'days_ago' => $this->getTimeAgo($contest->created_at),
                         ];
                     }),
+                    'stories' => $storiesGrouped,
                 ],
             ], 200);
         } catch (\Exception $e) {
