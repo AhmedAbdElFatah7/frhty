@@ -46,8 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contests/{id}/questions', [ContestController::class, 'getContestQuestions']); // Get contest questions
     Route::post('/contests/{id}/submit', [ContestController::class, 'submitContestAnswers']); // Submit answers
 
-    // Story Routes (3 endpoints only)
+    // Story Routes
     Route::get('/stories', [StoryController::class, 'index']); // Get all stories
+    Route::get('/stories/{id}', [StoryController::class, 'show']); // Get single story
     Route::post('/stories', [StoryController::class, 'store']); // Create story
     Route::post('/stories/{id}/view', [StoryController::class, 'markAsViewed']); // Mark story as viewed
 

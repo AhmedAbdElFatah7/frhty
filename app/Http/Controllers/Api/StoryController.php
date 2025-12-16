@@ -50,6 +50,62 @@ class StoryController extends Controller
     }
 
     /**
+     * Display a single story.
+     * 
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(Request $request, $id)
+    {
+        try {
+            $story = Story::with(['user:id,name,user_name,image', 'contest:id,title'])
+                ->withCount('views')
+                ->viewable()
+                ->findOrFail($id);
+
+            $currentUserId = $request->user()->id;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم جلب الستوري بنجاح',
+                'data' => [
+                    'story' => [
+                        'id' => $story->id,
+                        'media_path' => $story->media_path ? asset('storage/' . $story->media_path) : null,
+                        'media_type' => $story->media_type,
+                        'caption' => $story->caption,
+                        'expires_at' => $story->expires_at->format('Y-m-d H:i:s'),
+                        'created_at' => $story->created_at->format('Y-m-d H:i:s'),
+                        'user' => [
+                            'id' => $story->user->id,
+                            'name' => $story->user->name,
+                            'user_name' => $story->user->user_name,
+                            'image' => $story->user->image ? asset('storage/' . $story->user->image) : null,
+                        ],
+                        'contest' => $story->contest ? [
+                            'id' => $story->contest->id,
+                            'title' => $story->contest->title,
+                        ] : null,
+                        'views_count' => $story->views_count,
+                        'is_viewed' => $story->isViewedBy($currentUserId),
+                    ]
+                ]
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الستوري غير موجودة أو غير متاحة',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء جلب الستوري',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Store a newly created story.
      * 
      * @param  \App\Http\Requests\StoreStoryRequest  $request
