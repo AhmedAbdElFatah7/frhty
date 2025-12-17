@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Dashboard\AuthController as AdminAuthController;
 
 // Public routes (Authentication only)
 Route::post('/register', [AuthController::class, 'register']);
@@ -79,4 +80,38 @@ Route::middleware('auth:sanctum')->group(function () {
     // Celebrity Routes
     Route::get('/platforms', [ContestController::class, 'platforms']); // Celebrity only
     Route::post('/contests', [ContestController::class, 'store']); // Celebrity only
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
+use App\Http\Controllers\Dashboard\UserController as AdminUserController;
+use App\Http\Controllers\Dashboard\StatisticsController;
+
+Route::prefix('admin')->group(function () {
+
+    // Public admin routes (Login)
+    Route::post('/login', [AdminAuthController::class, 'login']);
+
+    // Protected admin routes
+    Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
+        Route::post('/logout', [AdminAuthController::class, 'logout']);
+        Route::get('/me', [AdminAuthController::class, 'me']);
+
+        // User Management Routes
+        Route::get('/users', [AdminUserController::class, 'index']);
+        Route::get('/users/{id}', [AdminUserController::class, 'show']);
+        Route::put('/users/{id}', [AdminUserController::class, 'update']);
+        Route::delete('/users/{id}', [AdminUserController::class, 'destroy']);
+
+        // Statistics Routes
+        Route::get('/statistics', [StatisticsController::class, 'index']);
+        Route::get('/statistics/users', [StatisticsController::class, 'users']);
+        Route::get('/statistics/content', [StatisticsController::class, 'content']);
+        Route::get('/statistics/engagement', [StatisticsController::class, 'engagement']);
+        Route::get('/statistics/contests', [StatisticsController::class, 'contests']);
+    });
 });
