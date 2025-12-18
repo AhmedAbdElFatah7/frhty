@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CelebrityController;
 use App\Http\Controllers\Api\ContestController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\StoryController;
 use App\Http\Controllers\Api\PostController;
@@ -28,6 +29,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/complete-profile', [AuthController::class, 'completeProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+
+    // Contact Route (requires auth)
+    Route::post('/contact', [ContactController::class, 'store']);
+
+    // Privacy Policy Route
+    Route::get('/privacy-policy', [ContactController::class, 'getPrivacyPolicy']);
 
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'getProfile']); // Get my profile
@@ -117,5 +124,9 @@ Route::prefix('admin')->group(function () {
         Route::get('/statistics/content', [StatisticsController::class, 'content']);
         Route::get('/statistics/engagement', [StatisticsController::class, 'engagement']);
         Route::get('/statistics/contests', [StatisticsController::class, 'contests']);
+
+        // Contact Messages Routes
+        Route::get('/contacts', [ContactController::class, 'index']);
+        Route::post('/contacts/{id}/read', [ContactController::class, 'markAsRead']);
     });
 });
