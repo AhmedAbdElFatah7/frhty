@@ -998,7 +998,7 @@ class ContestController extends Controller
         try {
             $user = $request->user();
 
-            $contest = Contest::findOrFail($id);
+            $contest = Contest::with('user')->findOrFail($id);
 
             // Get all attempts for this contest
             $attempts = \App\Models\ContestAttempt::where('contest_id', $id)
@@ -1038,6 +1038,12 @@ class ContestController extends Controller
                     'contest' => [
                         'title' => $contest->title,
                         'image' => $contest->image ? asset('storage/' . $contest->image) : null,
+                    ],
+                    'celebrity' => [
+                        'id' => $contest->user->id,
+                        'name' => $contest->user->name,
+                        'user_name' => $contest->user->user_name,
+                        'image' => $contest->user->image ? asset('storage/' . $contest->user->image) : null,
                     ],
                     'winners' => $winners->values(),
                 ],
