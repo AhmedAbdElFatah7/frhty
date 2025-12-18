@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Dashboard\AuthController as AdminAuthController;
+use App\Http\Controllers\Dashboard\UserController as AdminUserController;
+use App\Http\Controllers\Dashboard\StatisticsController;
 
 // Public routes (Authentication only)
 Route::post('/register', [AuthController::class, 'register']);
@@ -46,6 +48,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contests/{id}/attempt', [ContestController::class, 'getContestForAttempt']); // Get contest with attempt status
     Route::get('/contests/{id}/questions', [ContestController::class, 'getContestQuestions']); // Get contest questions
     Route::post('/contests/{id}/submit', [ContestController::class, 'submitContestAnswers']); // Submit answers
+    Route::get('/contests/{id}/results', [ContestController::class, 'getContestResults']); // Get contest results and rankings
+    Route::get('/contests-active', [ContestController::class, 'activeContestsWithParticipation']); // Get active contests with participation status
+
 
     // Story Routes
     Route::get('/stories', [StoryController::class, 'index']); // Get all stories
@@ -88,8 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-use App\Http\Controllers\Dashboard\UserController as AdminUserController;
-use App\Http\Controllers\Dashboard\StatisticsController;
+
 
 Route::prefix('admin')->group(function () {
 

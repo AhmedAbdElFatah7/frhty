@@ -906,4 +906,173 @@ class ContestController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get Active Contests With Participation Status
+     * 
+     * Returns all active contests with the user's participation status.
+     * If the user is authenticated, includes whether they have participated in each contest.
+     * 
+     * @authenticated
+     * 
+     * @response 200 scenario="success" {
+     *   "success": true,
+     *   "message": "تم جلب المسابقات النشطة بنجاح",
+     *   "data": {
+     *     "contests": [...],
+     *     "participated_contests": [...],
+     *     "stats": {
+     *       "total": 5,
+     *       "participated_count": 2,
+     *       "not_participated_count": 3
+     *     }
+     *   }
+     * }
+     */
+    public function activeContestsWithParticipation(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+
+            $contests = Contest::with(['user'])
+                ->where('is_active', true)
+                ->where('end_date', '>=', now())
+                ->where('start_date', '<=', now())
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $mappedContests = $contests->map(function ($contest) use ($user) {
+                // Check if user participated
+                $hasParticipated = false;
+                if ($user) {
+                    $hasParticipated = $contest->attempts()
+                        ->where('user_id', $user->id)
+                        ->exists();
+                }
+
+                // Calculate time since published
+                $createdAt = $contest->created_at;
+                $diff = $createdAt->diffForHumans();
+
+                return [
+                    'id' => $contest->id,
+                    'title' => $contest->title,
+                    'description' => $contest->description,
+                    'image' => $contest->image ? asset('storage/' . $contest->image) : null,
+                    'published_since' => $diff,
+                    'celebrity' => [
+                        'name' => $contest->user->name,
+                        'image' => $contest->user->image ? asset('storage/' . $contest->user->image) : null,
+                    ],
+                    'has_participated' => $hasParticipated,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم جلب المسابقات النشطة بنجاح',
+                'data' => [
+                    'contests' => $mappedContests->values(),
+                    'total' => $contests->count(),
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء جلب المسابقات',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get Contest Results and Rankings
+     * 
+     * Returns the results and participant rankings for a specific contest.
+     * Participants are ranked by score (highest first), then by completion time (earliest first).
+     * 
+     * @urlParam id integer required The ID of the contest. Example: 1
+     */
+    public function getContestResults(Request $request, $id): JsonResponse
+    {
+        try {
+            $user = $request->user();
+
+            $contest = Contest::findOrFail($id);
+
+            // Get all attempts for this contest
+            $attempts = \App\Models\ContestAttempt::where('contest_id', $id)
+                ->with('user')
+                ->get();
+
+            // Group by user and get the best attempt for each user
+            $userBestAttempts = $attempts->groupBy('user_id')->map(function ($userAttempts) {
+                return $userAttempts->sortBy([
+                    ['score', 'desc'],
+                    ['completed_at', 'asc'],
+                ])->first();
+            });
+
+            // Sort all best attempts by score (desc), then by completed_at (asc)
+            $sortedAttempts = $userBestAttempts->sortBy([
+                ['score', 'desc'],
+                ['completed_at', 'asc'],
+            ])->values();
+
+            // Build winners list (all participants ranked)
+            $winners = $sortedAttempts->map(function ($attempt, $index) use ($user) {
+                $isCurrentUser = $user && $attempt->user_id === $user->id;
+
+                return [
+                    'rank' => $index + 1,
+                    'name' => $attempt->user->name,
+                    'image' => $attempt->user->image ? asset('storage/' . $attempt->user->image) : null,
+                    'is_current_user' => $isCurrentUser,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم جلب نتائج المسابقة بنجاح',
+                'data' => [
+                    'contest' => [
+                        'title' => $contest->title,
+                        'image' => $contest->image ? asset('storage/' . $contest->image) : null,
+                    ],
+                    'winners' => $winners->values(),
+                ],
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'المسابقة غير موجودة',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء جلب النتائج',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get Arabic ordinal text for rank
+     */
+    private function getRankText($rank): string
+    {
+        return match ($rank) {
+            1 => 'الأول',
+            2 => 'الثاني',
+            3 => 'الثالث',
+            4 => 'الرابع',
+            5 => 'الخامس',
+            6 => 'السادس',
+            7 => 'السابع',
+            8 => 'الثامن',
+            9 => 'التاسع',
+            10 => 'العاشر',
+            default => "المركز {$rank}",
+        };
+    }
 }
