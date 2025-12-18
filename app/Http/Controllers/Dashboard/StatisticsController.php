@@ -147,7 +147,10 @@ class StatisticsController extends Controller
     public function getContestsStats()
     {
         $totalContests = Contest::count();
-        $activeContests = Contest::where('status', 'active')->count();
+        $activeContests = Contest::where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->count();
         $totalAttempts = ContestAttempt::count();
 
         // Contests today
