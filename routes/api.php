@@ -102,7 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('allow_http')->group(function () {
 
     // Public admin routes (Login)
     Route::post('/login', [AdminAuthController::class, 'login']);
