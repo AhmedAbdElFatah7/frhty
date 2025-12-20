@@ -104,6 +104,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::prefix('admin')->middleware('allow_http')->group(function () {
 
+    // Test route (can be removed later)
+    Route::get('/test', function () {
+        return response()->json(['success' => true, 'message' => 'API is working!']);
+    });
+
     // Public admin routes (Login)
     Route::post('/login', [AdminAuthController::class, 'login']);
 
